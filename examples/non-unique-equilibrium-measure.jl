@@ -12,10 +12,11 @@ V = x -> (x-3)*(x-2)*(1+x)*(2+x)*(3+x)*(2x-1)/20
 ic = SVector(-1,1)
 
 # First solution
-a = equilibriummeasure(V; a=ic, returnendpoint=true)[2]
+μ, a = equilibriummeasure(V; a=ic, returnendpoint=true)
 
 # Keep first solution in an array
-solns = [a]
+solns_endpoints = [a]
+solns_measure = [μ]
 
 for no_sols = 1:2
     
@@ -29,34 +30,37 @@ for no_sols = 1:2
 end
 
 # Try different damping
-b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.3, returnendpoint=true)[2]
-push!(solns, b)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.3, returnendpoint=true)
+push!(solns_endpoints, b)
+push!(solns_measure, μ)
 
 # Try different initial guesses
 ic = SVector(2,3)
-b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)[2]
-push!(solns, b)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+push!(solns_endpoints, b)
+push!(solns_measure, μ)
 
 ic = SVector(1,3)
-b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)[2]
-push!(solns, b)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+push!(solns_endpoints, b)
+push!(solns_measure, μ)
 
 ic = SVector(-1,4)
-b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)[2]
-push!(solns, b)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+push!(solns_endpoints, b)
+push!(solns_measure, μ)
 
-b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.4, returnendpoint=true)[2]
-push!(solns, b)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.4, returnendpoint=true)
+push!(solns_endpoints, b)
+push!(solns_measure, μ)
 
-b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)[2]
-push!(solns, b)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+push!(solns_endpoints, b)
+push!(solns_measure, μ)
 
 # Plot solutions
-p = plot(_equilibriummeasure(V, solns[1]...)[2])
-if length(solns) > 1
-    for i = 2:length(solns)
-        p = plot!(_equilibriummeasure(V, solns[i]...)[2], legend=:top)
-    end
+for i = 1:length(solns_measure)
+    p = plot!(solns_measure[i], legend=:top)
 end
 
 display(p)
