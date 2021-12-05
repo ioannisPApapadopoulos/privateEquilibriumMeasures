@@ -5,7 +5,7 @@ using Base, ClassicalOrthogonalPolynomials, ContinuumArrays, ForwardDiff, Interv
 import ForwardDiff: derivative, gradient, jacobian
 
 import LinearAlgebra: dot
-import IntervalSets: mean
+import IntervalSets: mean, leftendpoint
 
 export equilibriummeasure, _equilibriummeasure, deflation_inner_products, deflation_deriv, deflation_op, deflation_scale
 
@@ -64,12 +64,13 @@ Base.convert(::Type{DFunction}, f::Function) = DFunction(f)
 
 struct EquilibriumMeasureMoment
     V::DFunction
+    globalmin::Bool
 end
 
 _logterms(V, μ) = ()
 _logterms(V, μ, d) = ()
-# _logterms(V, μ, d) = ()
-function _logterms(V, μ, d1, d2)
+_logterms(V, μ, globalmin, d) = ()
+function _logterms(V, μ, globalmin, d1, d2)
     x = axes(μ,1)
     z1,z2 = mean(d1),mean(d2)
 
@@ -77,25 +78,24 @@ function _logterms(V, μ, d1, d2)
     # needs to be the same. This is only true for global mins. For local mins they
     # can be different. So I need to recode this so that we are only comparing on
     # the same interval and then I can find local mins too.
-    # if globalmin
-    #     (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z2 .- x'))*μ) + V(z2),)
-    # else
-    d11,d12 = d1
-    d21,d22 = d2
-    z3 = 0.5*(d11+z1)
-    z4 = 0.5*(d21+z2)
-    (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z3 .- x'))*μ) + V(z3),
-    2*(log.(abs.(z2 .- x'))*μ) - V(z2) - 2*(log.(abs.(z4 .- x'))*μ) + V(z4))
-    # end
+    if globalmin
+        (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z2 .- x'))*μ) + V(z2),)
+    else
+        d11,d21 = leftendpoint(d1),leftendpoint(d2)
+        z3 = 0.5*(d11+z1)
+        z4 = 0.5*(d21+z2)
+        (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z3 .- x'))*μ) + V(z3),
+        2*(log.(abs.(z2 .- x'))*μ) - V(z2) - 2*(log.(abs.(z4 .- x'))*μ) + V(z4))
+    end
 end
 
 function (E::EquilibriumMeasureMoment)(a)
     c0,μ = _equilibriummeasure(E.V, a)
-    SVector(c0..., sum(μ) - 1, _logterms(E.V, μ, components(axes(μ,1).domain)...)...)
+    SVector(c0..., sum(μ) - 1, _logterms(E.V, μ, E.globalmin, components(axes(μ,1).domain)...)...)
 end
 
-equilibriummeasure(V; a = SVector(-1.0,1.0), maxiterations=1000, knownsolutions=[], power=2, shift=1.0, dampening=1.0, returnendpoint=false) =
-    deflate_equilibriummeasure(EquilibriumMeasureMoment(DFunction(V)), a, maxiterations, knownsolutions, power, shift, dampening, returnendpoint)
+equilibriummeasure(V; a = SVector(-1.0,1.0), maxiterations=1000, knownsolutions=[], power=2, shift=1.0, dampening=1.0, returnendpoint=false, globalmin=true) =
+    deflate_equilibriummeasure(EquilibriumMeasureMoment(DFunction(V), globalmin), a, maxiterations, knownsolutions, power, shift, dampening, returnendpoint)
 function deflate_equilibriummeasure(μ, a, maxiterations, knownsolutions, power, shift, dampening, returnendpoint)
     num_found_sols = length(knownsolutions)
     for k=1:maxiterations

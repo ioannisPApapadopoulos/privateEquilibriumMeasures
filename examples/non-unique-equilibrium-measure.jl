@@ -30,31 +30,31 @@ for no_sols = 1:2
 end
 
 # Try different damping
-μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.3, returnendpoint=true)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns_endpoints, dampening=0.3, returnendpoint=true)
 push!(solns_endpoints, b)
 push!(solns_measure, μ)
 
 # Try different initial guesses
 ic = SVector(2,3)
-μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns_endpoints, dampening=0.5, returnendpoint=true)
 push!(solns_endpoints, b)
 push!(solns_measure, μ)
 
 ic = SVector(1,3)
-μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns_endpoints, dampening=0.5, returnendpoint=true)
 push!(solns_endpoints, b)
 push!(solns_measure, μ)
 
 ic = SVector(-1,4)
-μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns_endpoints, dampening=0.5, returnendpoint=true)
 push!(solns_endpoints, b)
 push!(solns_measure, μ)
 
-μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.4, returnendpoint=true)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns_endpoints, dampening=0.4, returnendpoint=true)
 push!(solns_endpoints, b)
 push!(solns_measure, μ)
 
-μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)
+μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns_endpoints, dampening=0.5, returnendpoint=true)
 push!(solns_endpoints, b)
 push!(solns_measure, μ)
 
