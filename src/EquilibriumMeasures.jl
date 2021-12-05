@@ -68,6 +68,7 @@ end
 
 _logterms(V, μ) = ()
 _logterms(V, μ, d) = ()
+# _logterms(V, μ, d) = ()
 function _logterms(V, μ, d1, d2)
     x = axes(μ,1)
     z1,z2 = mean(d1),mean(d2)
@@ -76,7 +77,16 @@ function _logterms(V, μ, d1, d2)
     # needs to be the same. This is only true for global mins. For local mins they
     # can be different. So I need to recode this so that we are only comparing on
     # the same interval and then I can find local mins too.
-    (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z2 .- x'))*μ) + V(z2),)
+    # if globalmin
+    #     (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z2 .- x'))*μ) + V(z2),)
+    # else
+    d11,d12 = d1
+    d21,d22 = d2
+    z3 = 0.5*(d11+z1)
+    z4 = 0.5*(d21+z2)
+    (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z3 .- x'))*μ) + V(z3),
+    2*(log.(abs.(z2 .- x'))*μ) - V(z2) - 2*(log.(abs.(z4 .- x'))*μ) + V(z4))
+    # end
 end
 
 function (E::EquilibriumMeasureMoment)(a)

@@ -9,7 +9,7 @@ Try finding multiple solutions of 2 interval problem.
 V = x -> (x-4)*(x-3)*(x-2)*(1+x)*(2+x)*(3+x)*(2x-1)*(x+4)/1e3
 
 # Initial guess
-ic = SVector(-3,-1,1,3)
+ic = SVector(-4,-1,1,4)
 
 # First solution
 μ, a = equilibriummeasure(V; a=ic, returnendpoint=true)
