@@ -5,7 +5,7 @@ using Base, ClassicalOrthogonalPolynomials, ContinuumArrays, ForwardDiff, Interv
 import ForwardDiff: derivative, gradient, jacobian
 
 import LinearAlgebra: dot
-import IntervalSets: mean, leftendpoint
+import IntervalSets: mean
 
 export equilibriummeasure, _equilibriummeasure, deflation_inner_products, deflation_deriv, deflation_op, deflation_scale
 
@@ -73,19 +73,15 @@ _logterms(V, μ, globalmin, d) = ()
 function _logterms(V, μ, globalmin, d1, d2)
     x = axes(μ,1)
     z1,z2 = mean(d1),mean(d2)
-
-    # FIXME: Right now, this is saying that the the constant of the 2 intervals
-    # needs to be the same. This is only true for global mins. For local mins they
-    # can be different. So I need to recode this so that we are only comparing on
-    # the same interval and then I can find local mins too.
     if globalmin
-        (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z2 .- x'))*μ) + V(z2),)
+        return (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z2 .- x'))*μ) + V(z2),)
     else
-        d11,d21 = leftendpoint(d1),leftendpoint(d2)
-        z3 = 0.5*(d11+z1)
-        z4 = 0.5*(d21+z2)
-        (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z3 .- x'))*μ) + V(z3),
-        2*(log.(abs.(z2 .- x'))*μ) - V(z2) - 2*(log.(abs.(z4 .- x'))*μ) + V(z4))
+        # d11,d21 = leftendpoint(d1),leftendpoint(d2)
+        # z3 = 0.5*(d11+z1)
+        # z4 = 0.5*(d21+z2)
+        # (2*(log.(abs.(z1 .- x'))*μ) - V(z1) - 2*(log.(abs.(z3 .- x'))*μ) + V(z3),
+        # 2*(log.(abs.(z2 .- x'))*μ) - V(z2) - 2*(log.(abs.(z4 .- x'))*μ) + V(z4))
+        return ()
     end
 end
 
