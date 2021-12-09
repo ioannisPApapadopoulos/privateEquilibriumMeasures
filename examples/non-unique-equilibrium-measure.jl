@@ -2,7 +2,7 @@ using EquilibriumMeasures, StaticArrays
 using Plots
 
 """
-This script finds 9 solutions for the equilibrium measure of which 3 are feasible. 
+This script finds 9 solutions for the equilibrium measure of which 2 are feasible. 
 """
 
 # Potential
@@ -22,10 +22,11 @@ for no_sols = 1:2
     
     # Compute next solution with the same initial guess but deflating
     # all other known solutions
-    b = equilibriummeasure(V; a=ic, knownsolutions=solns, dampening=0.5, returnendpoint=true)[2]
+    μ, b = equilibriummeasure(V; a=ic, knownsolutions=solns_endpoints, dampening=0.5, returnendpoint=true)
 
     # Append array of known solutions with new solution
-    push!(solns, b)
+    push!(solns_endpoints, b)
+    push!(solns_measure, μ)
 
 end
 
@@ -59,9 +60,9 @@ push!(solns_endpoints, b)
 push!(solns_measure, μ)
 
 # Plot solutions
-for i = 1:length(solns_measure)
-    p = plot!(solns_measure[i], legend=:top)
+p = plot()
+for (i,j) = zip([5,8], 1:2)#1:length(solns_measure)
+    p = plot!(solns_measure[i], label="μ_$j", xlabel="x", ylabel="μ(x)", legend=:top)
 end
 
 display(p)
-# savefig(p, "em.pdf")
